@@ -15,7 +15,7 @@ Ce logiciel **détecte automatiquement** le bon dossier d'installation et instal
 
 ## 🎥 **Aperçu**
 
-![Preview]([http://url/to/img.png](https://cdn.discordapp.com/attachments/821525050401357874/1350784768131862538/image.png?ex=67d7ffd9&is=67d6ae59&hm=53ae62b9b1314064145655c7d74990cd66e82f2c84d901b0406af0dc9bb209f9&))
+![Preview]([https://cdn.discordapp.com/attachments/821525050401357874/1350784768131862538/image.png?ex=67d7ffd9&is=67d6ae59&hm=53ae62b9b1314064145655c7d74990cd66e82f2c84d901b0406af0dc9bb209f9&](https://cdn.discordapp.com/attachments/821525050401357874/1350784768131862538/image.png?ex=67d7ffd9&is=67d6ae59&hm=53ae62b9b1314064145655c7d74990cd66e82f2c84d901b0406af0dc9bb209f9&))
 
 ---
 
