@@ -21,7 +21,7 @@ Ce logiciel **détecte automatiquement** le bon dossier d'installation et instal
 
 ## 🚀 **Installation**
 ### **1️⃣ Télécharger l'exécutable**
-Télécharge la dernière version du programme **[ICI](https://github.com/TON-REPO-GITHUB/releases)**.
+Télécharge la dernière version du programme **[ICI](https://github.com/LeRoleplay/lrfr_apptool/tree/ee827dd132edd290726dada1ad0821d079ff5adb/dist)**.
 
 ### **2️⃣ Lancer l’installateur**
 Une fois téléchargé, **double-clique** sur `LeRoleplay_CSS_Installer.exe` pour ouvrir le programme.
