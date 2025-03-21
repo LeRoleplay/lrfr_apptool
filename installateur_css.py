@@ -9,10 +9,12 @@ from threading import Thread
 from io import BytesIO
 from ttkbootstrap import Style
 from PIL import Image, ImageTk
+import atexit
 
 # 📌 Liens des fichiers
-CSS_PACK_URL = "https://downloads-eu.gmodcontent.com/file/gmodcontent-eu/css-content-gmodcontent.zip"
+CSS_PACK_URL = "https://le-roleplay.fr/dl/css-content-leroleplay.zip"
 LOGO_URL = "https://le-roleplay.fr/img/logo.png"
+ICON_URL = "https://le-roleplay.fr/img/icon.ico"
 
 # 📌 Recherche automatique du dossier addons de Garry's Mod
 def find_gmod_path():
@@ -32,22 +34,35 @@ def find_gmod_path():
 def load_web_image(url):
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Vérifie si l'image est accessible
-        image_data = BytesIO(response.content)  # Convertir en image exploitable
+        response.raise_for_status()
+        image_data = BytesIO(response.content)
         return Image.open(image_data).resize((120, 120), Image.LANCZOS)
     except Exception as e:
         print(f"⚠ Erreur lors du chargement du logo : {e}")
         return None
 
-# 📌 Création de la fenêtre principale
+# 📌 Création de la fenêtre principale avec icône personnalisée
 root = tk.Tk()
 root.title("Le Roleplay - CS:S Installer")
-root.geometry("600x450")  # Fenêtre plus large
+root.geometry("600x450")
 root.resizable(False, False)
-style = Style("darkly")  # Thème sombre
+style = Style("darkly")
 root.configure(bg="#212121")
 
-# 📌 Charger le logo depuis le Web
+# 📅 Télécharger l'icône depuis le Web et l'appliquer
+try:
+    icon_response = requests.get(ICON_URL)
+    icon_response.raise_for_status()
+    ico_path = os.path.join(os.getcwd(), "temp_icon.ico")
+
+    with open(ico_path, "wb") as f:
+        f.write(icon_response.content)
+
+    root.iconbitmap(ico_path)
+except Exception as e:
+    print(f"⚠ Impossible de charger l'icône : {e}")
+
+# 📅 Charger le logo depuis le Web
 logo_image = load_web_image(LOGO_URL)
 if logo_image:
     logo = ImageTk.PhotoImage(logo_image)
@@ -56,15 +71,15 @@ if logo_image:
 else:
     tk.Label(root, text="⚠ Logo non chargé", fg="red", bg="#212121").pack(pady=10)
 
-# 📌 Titre principal
+# 📅 Titre principal
 title_label = tk.Label(root, text="Le Roleplay - CS:S Installer", font=("Arial", 16, "bold"), fg="white", bg="#212121")
 title_label.pack(pady=5)
 
-# 📌 Variable pour stocker le chemin
+# 📅 Variable pour stocker le chemin
 install_path = tk.StringVar()
 install_path.set(find_gmod_path())
 
-# ✅ Sélection manuelle du dossier (si détecté incorrectement)
+# ✅ Sélection manuelle du dossier
 def select_folder():
     folder_selected = filedialog.askdirectory()
     if folder_selected:
@@ -84,8 +99,6 @@ def download_and_install():
     def download():
         try:
             file_path = os.path.join(install_path.get(), "css_pack.zip")
-
-            # 📥 Téléchargement du fichier
             response = requests.get(CSS_PACK_URL, stream=True)
             if response.status_code != 200:
                 messagebox.showerror("Erreur", "Le fichier n'a pas pu être téléchargé.")
@@ -96,7 +109,6 @@ def download_and_install():
             downloaded_size = 0
             start_time = time.time()
 
-            # ⏳ Texte par défaut pendant le début du téléchargement
             speed_label.config(text="⚡ Vitesse : calcul...")
             time_label.config(text="⏳ Temps écoulé : 0.00 sec")
             eta_label.config(text="📅 Temps restant : estimation...")
@@ -117,7 +129,6 @@ def download_and_install():
                     speed_label.config(text=f"⚡ Vitesse : {speed:.2f} MB/s")
                     time_label.config(text=f"⏳ Temps écoulé : {elapsed_time:.2f} sec")
                     eta_label.config(text=f"📅 Temps restant : {eta}")
-
                     root.update_idletasks()
 
             progress_label.config(text="Extraction en cours...")
@@ -135,10 +146,9 @@ def download_and_install():
         finally:
             download_button.config(state=tk.NORMAL)
 
-    # Lancer le téléchargement dans un thread
     Thread(target=download).start()
 
-# 📌 Interface graphique stylisée
+# 📅 Interface graphique
 frame = tk.Frame(root, bg="#212121")
 frame.pack(pady=5)
 
@@ -154,11 +164,9 @@ download_button.pack(pady=10)
 progress_label = tk.Label(root, text="", fg="white", bg="#212121")
 progress_label.pack()
 
-# ✅ Barre de progression horizontale
 progress_bar = ttk.Progressbar(root, length=500, mode="determinate", style="info.Horizontal.TProgressbar")
 progress_bar.pack(pady=10)
 
-# ✅ Ajout des infos sur la vitesse et le temps restant
 speed_label = tk.Label(root, text="", fg="white", bg="#212121", font=("Arial", 10))
 speed_label.pack()
 time_label = tk.Label(root, text="", fg="white", bg="#212121", font=("Arial", 10))
@@ -166,5 +174,11 @@ time_label.pack()
 eta_label = tk.Label(root, text="", fg="white", bg="#212121", font=("Arial", 10, "bold"))
 eta_label.pack()
 
-# 📌 Lancer l'application
+# 🔧 Nettoyage de l'icône temporaire à la fermeture
+@atexit.register
+def cleanup_icon():
+    if os.path.exists("temp_icon.ico"):
+        os.remove("temp_icon.ico")
+
+# 📅 Lancer l'application
 root.mainloop()
