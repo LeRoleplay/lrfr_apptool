@@ -11,7 +11,7 @@ from ttkbootstrap import Style
 from PIL import Image, ImageTk
 
 # 📌 Liens des fichiers
-CSS_PACK_URL = "https://tkx.fr/css-content-leroleplay.zip"
+CSS_PACK_URL = "https://downloads-eu.gmodcontent.com/file/gmodcontent-eu/css-content-gmodcontent.zip"
 LOGO_URL = "https://le-roleplay.fr/img/logo.png"
 
 # 📌 Recherche automatique du dossier addons de Garry's Mod
