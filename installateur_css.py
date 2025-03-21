@@ -146,7 +146,7 @@ def download_and_install():
         finally:
             download_button.config(state=tk.NORMAL)
 
-    Thread(target=download).start()
+    Thread(target=download, daemon=True).start()
 
 # 📅 Interface graphique
 frame = tk.Frame(root, bg="#212121")
