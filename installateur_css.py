@@ -70,12 +70,11 @@ def select_folder():
     if folder_selected:
         install_path.set(folder_selected)
 
-# ✅ Fonction pour télécharger et installer le pack CS:S
 def download_and_install():
     if not install_path.get():
         messagebox.showerror("Erreur", "Impossible de trouver le dossier GMod. Sélectionnez-le manuellement.")
         return
-    
+
     download_button.config(state=tk.DISABLED)
     progress_label.config(text="Téléchargement en cours...")
     speed_label.config(text="")
@@ -85,7 +84,7 @@ def download_and_install():
     def download():
         try:
             file_path = os.path.join(install_path.get(), "css_pack.zip")
-            
+
             # 📥 Téléchargement du fichier
             response = requests.get(CSS_PACK_URL, stream=True)
             if response.status_code != 200:
@@ -97,43 +96,46 @@ def download_and_install():
             downloaded_size = 0
             start_time = time.time()
 
+            # ⏳ Texte par défaut pendant le début du téléchargement
+            speed_label.config(text="⚡ Vitesse : calcul...")
+            time_label.config(text="⏳ Temps écoulé : 0.00 sec")
+            eta_label.config(text="📅 Temps restant : estimation...")
+
             with open(file_path, "wb") as file:
                 for data in response.iter_content(1024):
                     file.write(data)
                     downloaded_size += len(data)
-                    
-                    # 🔄 Mise à jour de la barre de progression
-                    progress_bar["value"] = (downloaded_size / total_size) * 100
-                    
-                    # 📊 Calcul de la vitesse et du temps restant
+
+                    if total_size > 0:
+                        progress_bar["value"] = (downloaded_size / total_size) * 100
+
                     elapsed_time = time.time() - start_time
-                    speed = (downloaded_size / elapsed_time) / (1024 * 1024)  # Vitesse en MB/s
-                    remaining_time = (total_size - downloaded_size) / (speed * 1024 * 1024) if speed > 0 else 0
-                    eta = time.strftime("%M min %S sec", time.gmtime(remaining_time))
-                    
-                    # 🔹 Mise à jour des labels
-                    speed_label.config(text=f"Vitesse : {speed:.2f} MB/s")
-                    time_label.config(text=f"Temps écoulé : {elapsed_time:.2f} sec")
-                    eta_label.config(text=f"Temps restant estimé : {eta}")
-                    
+                    speed = (downloaded_size / elapsed_time) / (1024 * 1024) if elapsed_time > 0 else 0
+                    remaining_time = ((total_size - downloaded_size) / (speed * 1024 * 1024)) if speed > 0 else 0
+                    eta = time.strftime("%M min %S sec", time.gmtime(remaining_time)) if remaining_time > 0 else "calcul..."
+
+                    speed_label.config(text=f"⚡ Vitesse : {speed:.2f} MB/s")
+                    time_label.config(text=f"⏳ Temps écoulé : {elapsed_time:.2f} sec")
+                    eta_label.config(text=f"📅 Temps restant : {eta}")
+
                     root.update_idletasks()
 
             progress_label.config(text="Extraction en cours...")
 
-            # 📦 Extraction du pack dans "addons"
             with zipfile.ZipFile(file_path, 'r') as zip_ref:
                 zip_ref.extractall(install_path.get())
 
-            os.remove(file_path)  # Suppression du fichier ZIP après extraction
-            
+            os.remove(file_path)
+
             progress_label.config(text="✅ Installation terminée !")
             messagebox.showinfo("Succès", "Le pack CS:S a été installé avec succès dans addons !")
+
         except Exception as e:
             messagebox.showerror("Erreur", f"Une erreur est survenue : {e}")
         finally:
             download_button.config(state=tk.NORMAL)
 
-    # Lancer le téléchargement et l'installation dans un thread séparé
+    # Lancer le téléchargement dans un thread
     Thread(target=download).start()
 
 # 📌 Interface graphique stylisée
